@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Local Jungle Custom Header Nav
- * Version: 1.0.0
+ * Version: 1.0.1
  * Requires at least: 5.5
  * Requires PHP: 7.2
  * Description: Set up a custom navigation the LJ way.
@@ -88,8 +88,42 @@ add_shortcode( 'lj-menu-toggle', function ( $atts ) {
 	return '<div class="hamburger" id="hamburger"><div></div><div></div><div></div></div>';
 } );
 
-add_action( 'wp_header', function () {
+add_action( 'wp_head', function () {
 	?>
+    <script data-nowprocket>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Menu Toggle
+        const hamburger = document.getElementById('hamburger');
+        const menu = document.querySelector('.theme-navigation');
+
+        hamburger.addEventListener('click', function () {
+          hamburger.classList.toggle('active');
+          menu.classList.toggle('active');
+        });
+
+        document.querySelectorAll('.open-sub').forEach(toggle => {
+          toggle.addEventListener('click', function (e) {
+            const submenu = this.nextElementSibling;
+            if (submenu && submenu.classList.contains('sub-menu')) {
+              submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+            }
+          });
+        });
+
+        // When a menu item is clicked remove the 'active' class to collapse it
+        const nav = document.querySelector('.theme-navigation');
+
+        if (nav) {
+          nav.addEventListener('click', function (e) {
+            const target = e.target.closest('a');
+            if (target && nav.contains(target)) {
+              nav.classList.remove('active');
+              hamburger.classList.remove('active');
+            }
+          });
+        }
+      });
+    </script>
     <style>
         .main_menu_container {
             position: relative;
@@ -107,13 +141,14 @@ add_action( 'wp_header', function () {
             height: 30px; /* Adjust to your desired height */
             position: relative; /* Important for precise positioning of spans */
             /*border: 1px solid red;*/
+            display: none;
         }
 
         /* Style the hamburger lines */
         .hamburger div {
             width: 30px; /* Ensure the span width matches the container's width */
             height: 4px; /* Adjust thickness of lines */
-            background-color: #fff; /* Set the bars to white */
+            background-color: #4491c4; /* Set the bars to white */
             transition: all 0.3s ease; /* Smooth transition for transform and positioning */
             position: absolute; /* Absolute position for precise control */
         }
@@ -170,7 +205,7 @@ add_action( 'wp_header', function () {
             text-decoration: none;
             display: block;
             padding: 10px 0;
-            color: #c2ad77;
+            color: #fff;
         }
 
         .theme-navigation.active {
@@ -213,6 +248,15 @@ add_action( 'wp_header', function () {
 
         .theme-navigation .sub-menu li:last-child {
             border-bottom: none;
+        }
+
+        @media (max-width: 600px) {
+            #hamburger {
+                display: block;
+            }
+            .right_bottom nav {
+                display: none;
+            }
         }
     </style>
 	<?php
